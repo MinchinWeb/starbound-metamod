@@ -29,6 +29,12 @@ RED = colorama.Fore.RED
 YELLOW = colorama.Fore.YELLOW
 RESET_ALL = colorama.Style.RESET_ALL
 
+
+@task
+def hello_world(ctx):
+    print("Hello World!")
+
+
 @task
 def unpack_assets(ctx, source=SB_ASSETS, destination = 'unpacked'):
     """Unpack the game assets."""
@@ -50,7 +56,7 @@ def unpack_assets(ctx, source=SB_ASSETS, destination = 'unpacked'):
         # test if folder is empty
         if list(destination.rglob('*')):
             print("Destination Folder: {}Exists, Not Empty{}".format(YELLOW, RESET_ALL))
-            print("    {}".format(destination))
+            print("    {}".format(destination.resolve()))
             if text.query_yes_no("    Empty Folder?"):
                 winshell.delete_file(destination.rglob('*'), silent=True)
         else:
@@ -75,5 +81,63 @@ def unpack_assets(ctx, source=SB_ASSETS, destination = 'unpacked'):
 
 
 @task
-def hello_world(ctx):
-    print("Hello World!")
+def unpack_steam_mods(ctx, source=SB_STEAM_MODS_DIR,
+                      destination = 'unpacked-mods', override_existing=False):
+    """Unpack all steam mods."""
+    text.title("Steam Mod Unpacker")
+
+    source = Path(source)
+    destination = Path(destination)
+
+    # check source file
+    if source.exists():
+        print("Steam Mods: {}FOUND{}!".format(GREEN, RESET_ALL))
+    else:
+        print("Steam Mods: {}MISSING{}".format(RED, RESET_ALL))
+        print("Exiting...")
+        sys.exit(1)
+    
+    # check destination folder
+    if destination.exists():
+        # test if folder is empty
+        if list(destination.rglob('*')):
+            print("Destination Folder: {}Exists, Not Empty{}".format(YELLOW, RESET_ALL))
+            print("    {}".format(destination.resolve()))
+            if text.query_yes_no("    Empty Folder?"):
+                winshell.delete_file(destination.rglob('*'), silent=True)
+        else:
+            print("Destination Folder: {}Exists, Empty{}!".format(GREEN, RESET_ALL))
+    else:
+        print("Destination Folder: {}MISSING{}".format(YELLOW, RESET_ALL))
+        if text.query_yes_no("    Create?"):
+            destination.mkdir(parents=True)
+        else:
+            print("Exiting...")
+            sys.exit(1)
+
+    print("Unpacking...")
+    for fn in source.iterdir():
+        if fn.is_dir():
+            mod_id = fn.name
+            mod_destination = destination / mod_id
+            if mod_destination.exists():
+                mod_override = text.query_yes_no_all("Destination folder for mod {} exists. Override?".format(mod_id),
+                                                    default='no')
+                if mod_override == 2:
+                    override_existing = True
+                
+                if override_existing or mod_override:
+                    winshell.rmdir(mod_destination)
+                else:
+                    print("    {}Skipping{} {}...".format(YELLOW, RESET_ALL, mod_id))
+                    continue
+                
+            # the actual unpacking!
+            cmd = '"{}" "{}" "{}"'.format(
+                SB_ASSET_UNPACKER,
+                fn / 'contents.pak',
+                mod_destination,
+            )
+            run(cmd)
+    print("{}Done!{}".format(GREEN, RESET_ALL))
+
