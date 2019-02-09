@@ -57,13 +57,15 @@ def unpack_assets(ctx, source=SB_ASSETS, destination = 'unpacked'):
         if list(destination.rglob('*')):
             print("Destination Folder: {}Exists, Not Empty{}".format(YELLOW, RESET_ALL))
             print("    {}".format(destination.resolve()))
-            if text.query_yes_no("    Empty Folder?"):
+            ans = text.query_yes_no("    Empty Folder?")
+            if ans == text.Answers.YES:
                 winshell.delete_file(destination.rglob('*'), silent=True)
         else:
             print("Destination Folder: {}Exists, Empty{}!".format(GREEN, RESET_ALL))
     else:
         print("Destination Folder: {}MISSING{}".format(YELLOW, RESET_ALL))
-        if text.query_yes_no("    Create?"):
+        ans = text.query_yes_no("    Create?")
+        if ans == text.Answers.YES:
             destination.mkdir(parents=True)
         else:
             print("Exiting...")
@@ -82,9 +84,15 @@ def unpack_assets(ctx, source=SB_ASSETS, destination = 'unpacked'):
 
 @task
 def unpack_steam_mods(ctx, source=SB_STEAM_MODS_DIR,
-                      destination = 'unpacked-mods', override_existing=False):
+                      destination = 'unpacked-mods', override_existing=False,
+                      skip_existing=False):
     """Unpack all steam mods."""
     text.title("Steam Mod Unpacker")
+
+    count_skipped = 0
+    count_unpacked = 0
+    count_errorred = 0
+    error_list = []
 
     source = Path(source)
     destination = Path(destination)
@@ -103,13 +111,15 @@ def unpack_steam_mods(ctx, source=SB_STEAM_MODS_DIR,
         if list(destination.rglob('*')):
             print("Destination Folder: {}Exists, Not Empty{}".format(YELLOW, RESET_ALL))
             print("    {}".format(destination.resolve()))
-            if text.query_yes_no("    Empty Folder?"):
+            ans = text.query_yes_no("    Empty Folder?", default="no")
+            if ans == text.Answers.YES:
                 winshell.delete_file(destination.rglob('*'), silent=True)
         else:
             print("Destination Folder: {}Exists, Empty{}!".format(GREEN, RESET_ALL))
     else:
         print("Destination Folder: {}MISSING{}".format(YELLOW, RESET_ALL))
-        if text.query_yes_no("    Create?"):
+        ans = text.query_yes_no("    Create?")
+        if ans == text.Answers.YES:
             destination.mkdir(parents=True)
         else:
             print("Exiting...")
@@ -120,24 +130,51 @@ def unpack_steam_mods(ctx, source=SB_STEAM_MODS_DIR,
         if fn.is_dir():
             mod_id = fn.name
             mod_destination = destination / mod_id
+            skip_this = False
+            override_this = False
             if mod_destination.exists():
-                mod_override = text.query_yes_no_all("Destination folder for mod {} exists. Override?".format(mod_id),
-                                                    default='no')
-                if mod_override == 2:
-                    override_existing = True
-                
-                if override_existing or mod_override:
+                if not override_existing and not skip_existing:
+                    ans = text.query_yes_no_all_none(("Destination folder for "
+                                                      "mod {} exists. Override?"
+                                                      .format(mod_id)),
+                                                     default='none')
+                    if ans == text.Answers.YES:
+                        override_this = True
+                    elif ans == text.Answers.NO:
+                        skip_this = True
+                    elif ans == text.Answers.ALL:
+                        override_existing = True
+                        override_this = True
+                    elif ans == text.Answers.NONE:
+                        skip_existing = True
+                        skip_this = True
+
+                if override_this or override_existing:
                     winshell.rmdir(mod_destination)
                 else:
-                    print("    {}Skipping{} {}...".format(YELLOW, RESET_ALL, mod_id))
-                    continue
+                    skip_this = True
                 
             # the actual unpacking!
-            cmd = '"{}" "{}" "{}"'.format(
-                SB_ASSET_UNPACKER,
-                fn / 'contents.pak',
-                mod_destination,
-            )
-            run(cmd)
-    print("{}Done!{}".format(GREEN, RESET_ALL))
+            if skip_this:
+                print("    {}Skipping{} {}...".format(YELLOW, RESET_ALL, mod_id))
+                count_skipped += 1
+            else:
+                cmd = '"{}" "{}" "{}"'.format(
+                    SB_ASSET_UNPACKER,
+                    fn / 'contents.pak',
+                    mod_destination,
+                )
+                try:
+                    run(cmd)
+                except Exception as e:
+                    # print(e)
+                    count_errorred += 1
+                    error_list.append(mod_id)
+                else:
+                    count_unpacked += 1
 
+    print()
+    print(("{}Done!{} {} mods unpacked, {} skipped, and {} errorred."
+           .format(GREEN, RESET_ALL, count_unpacked, count_skipped,
+                   count_errorred)))
+    print("{}Errors{}: {}".format(YELLOW, RESET_ALL, ", ".join(error_list)))

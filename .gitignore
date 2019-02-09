@@ -106,3 +106,4 @@ venv.bak/
 ## project
 unpacked/
 unpacked-mods/
+.vscode/

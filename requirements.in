@@ -1,0 +1,5 @@
+colorama
+invoke
+minchin.text >= 6.0.0
+pip-tools
+winshell
