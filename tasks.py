@@ -85,7 +85,7 @@ def unpack_assets(ctx, source=SB_ASSETS, destination = 'unpacked'):
 @task
 def unpack_steam_mods(ctx, source=SB_STEAM_MODS_DIR,
                       destination = 'unpacked-mods', override_existing=False,
-                      skip_existing=False):
+                      skip_existing=False, verbose=False):
     """Unpack all steam mods."""
     text.title("Steam Mod Unpacker")
 
@@ -156,25 +156,33 @@ def unpack_steam_mods(ctx, source=SB_STEAM_MODS_DIR,
                 
             # the actual unpacking!
             if skip_this:
-                print("    {}Skipping{} {}...".format(YELLOW, RESET_ALL, mod_id))
+                if verbose:
+                    print("    {}Skipping{} {}...".format(YELLOW, RESET_ALL, mod_id))
                 count_skipped += 1
             else:
-                cmd = '"{}" "{}" "{}"'.format(
-                    SB_ASSET_UNPACKER,
-                    fn / 'contents.pak',
-                    mod_destination,
-                )
-                try:
-                    run(cmd)
-                except Exception as e:
-                    # print(e)
-                    count_errorred += 1
-                    error_list.append(mod_id)
+                if (fn / 'contents.pak').exists():
+                    cmd = '"{}" "{}" "{}"'.format(
+                        SB_ASSET_UNPACKER,
+                        fn / 'contents.pak',
+                        mod_destination,
+                    )
+                    try:
+                        run(cmd)
+                    except Exception as e:
+                        # print(e)
+                        count_errorred += 1
+                        error_list.append(mod_id)
+                    else:
+                        count_unpacked += 1
                 else:
-                    count_unpacked += 1
+                    print("    {}Skipping{}, missing file: {}".format(
+                        YELLOW, RESET_ALL, (fn / 'contents.pak')
+                    ))
+                    count_skipped += 1
 
     print()
     print(("{}Done!{} {} mods unpacked, {} skipped, and {} errorred."
            .format(GREEN, RESET_ALL, count_unpacked, count_skipped,
                    count_errorred)))
-    print("{}Errors{}: {}".format(YELLOW, RESET_ALL, ", ".join(error_list)))
+    if error_list:
+        print("{}Errors{}: {}".format(YELLOW, RESET_ALL, ", ".join(error_list)))
