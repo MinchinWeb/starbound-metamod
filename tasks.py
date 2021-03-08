@@ -221,7 +221,9 @@ def copy_mods_to_server(
     count_copied = 0
     count_updated = 0
     count_skipped = 0
+    count_missing = 0
     count_errorred = 0
+    missing_list = []
     error_list = []
 
     source = Path(source)
@@ -336,18 +338,32 @@ def copy_mods_to_server(
                 winshell.copy_file(str(mod_source), str(mod_destination))
                 count_copied += 1
 
+    print("Check for completion...")
+    for mod_id in mods:
+        mod_destination = destination / f"{mod_id}.pak"
+        if not mod_destination.exists():
+            missing_list.append(mod_id)
+            count_missing += 1
+
     print()
     print(
         (
-            "{}Done!{} {} mods copied, {} updated, {} skipped, and {} errorred.".format(
+            "{}Done!{} {} mods copied, {} updated, {} skipped, {} missing, and {} errorred.".format(
                 GREEN,
                 RESET_ALL,
                 count_copied,
                 count_updated,
                 count_skipped,
+                count_missing,
                 count_errorred,
             )
         )
     )
+    if missing_list:
+        print(
+            "{}Missing from source{}: {}".format(
+                YELLOW, RESET_ALL, ", ".join(missing_list)
+            )
+        )
     if error_list:
         print("{}Errors{}: {}".format(YELLOW, RESET_ALL, ", ".join(error_list)))
