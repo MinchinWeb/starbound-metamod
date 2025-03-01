@@ -1,0 +1,70 @@
+729422192   # Inventory Interface Redone
+729428280   # Gardenbot2 : Reboot Edition
+729532886   # Universal Uncrafter
+729726251   # Faster Warp
+729726478   # Weapon Stats
+730745660   # AnTiMonster
+731220462   # Enhanced Storage
+731354142   # Improved Food Descriptions
+731659777   # Plantable Flowers
+732371478   # Shadowed Atmospheres
+732992186   # Memento Mori
+733119724   # (TanzLO) More Subtle Ore Glow
+734170655   # AnTiVegetation
+740385324   # Colony Deed Wiring
+740863523   # Legendary Tooltips
+751868467   # Magic Labels
+752112050   # BetterSleep
+753188786   # Named Saplings
+756729190   # Recipe Adjustment: Campfire to Kitchen
+784179199   # Outpost Nebula - Orion
+855130226   # Tentacle drop rates and cooking recipes
+885877773   # Parallax Compression (FPS Improvement)
+902555153   # Optimizebound
+907216757   # X Close-Button Fix For Old Mods
+1099450875  # Food Spoil Bars
+1107664957  # More threads - Lag reducer - 8-thread edition
+1117985463  # Improved Ship Encounter Descriptions
+1121701081  # Dynamic Fuel Hatch
+1296666565  # Heartbeat
+1301992771  # Taehl's Teleport Beams
+1703567517  # Balanced Asteroids
+1824175379  # Novakid Codices
+# 1172856174  # Kelp Sapling Fix  # broken on multiplayer
+# 745573454   # Steambound reloaded - Automation, item transportation and much more!
+
+# Microdungeons
+980158043   # Small wine Cellar
+1002304970  # Green Hills microdungeon six-pack
+1038933028  # "Creepy Cultists" microdungeon six-pack
+1053304976  # "Death Valley" microdungeon six pack
+1074074459  # "Roots and Vines" microdungeon six-pack
+1080038743  # "Deep Frozen" microdungeon Six-Pack
+1087831706  # The first "Community Picks" dungeon pack
+1106239639  # The "Darkest Nightmares" microdungeon six-pack
+1146785831  # The "Deadly Poison" microdungeon six pack
+1151130209  # The "Flaming Hot" microduneon six pack
+1161083233  # The "Permafrost" microdungeon six pack
+1242288129  # Fabmats Christmaspack
+
+731683297   # Enhanced Party Interface
+737027388   # Enhanced Chat Readability
+1276739133  # Improved Chat Bar
+1812329954  # Radio message retexture
+
+1117007107  # More Planet Info
+1761193918  # More Planet Info Lush Planet fix
+1772643711  # [More Planet Info] 1.4 Quest Marker Fix
+
+# Instruments
+747345375   # Musical Merchants
+749333935   # Model M
+756348717   # French Horn Instrument
+911689682   # Kazoo
+1137061063  # Harpsichord Instrument
+1137865204  # Sitar Instrument
+1137869485  # Tenor Drum Kit Instrument
+1601371427  # John Denver's Country Roads Full song for instruments
+
+946227505   # DigitalStorage
+1189065705  # HLib (for DigitalStorage)

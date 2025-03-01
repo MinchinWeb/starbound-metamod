@@ -8,10 +8,9 @@ from invoke import run, task
 
 SB_STEAM_ID = "211820"
 
-SB_BASE_DIR = Path(r"C:\Program Files (x86)\Steam\steamapps\common\Starbound")
-SB_STEAM_MODS_DIR = Path(
-    r"C:\Program Files (x86)\Steam\steamapps\workshop\content\211820"
-)
+SB_BASE_DIR = Path(r"D:\SteamLibrary\steamapps\common\Starbound")
+SB_STEAM_MODS_DIR = Path( r"D:\SteamLibrary\steamapps\workshop\content\211820")
+
 SB_UNIVERSE_DIR = SB_BASE_DIR / "storage" / "universe"
 SB_PLAYER_DIR = SB_BASE_DIR / "storage" / "player"
 
@@ -230,8 +229,10 @@ def copy_mods_to_server(
     # check source file
     if source.exists():
         print("Steam Mods: {}FOUND{}!".format(GREEN, RESET_ALL))
+        print("    {}".format(source.resolve()))
     else:
         print("Steam Mods: {}MISSING{}".format(RED, RESET_ALL))
+        print("    {}".format(source.resolve()))
         print("Exiting...")
         sys.exit(1)
 
@@ -255,6 +256,7 @@ def copy_mods_to_server(
             print("Destination Folder: {}Exists, Empty{}!".format(GREEN, RESET_ALL))
     else:
         print("Destination Folder: {}MISSING{}".format(YELLOW, RESET_ALL))
+        print("    {}".format(destination.resolve()))
         ans = text.query_yes_no("    Create?")
         if ans == text.Answers.YES:
             destination.mkdir(parents=True)
